@@ -60,7 +60,6 @@ public class CartaoController {
 					.status(HttpStatus.NOT_FOUND)
 					.body(null);
 		}
-		
 	}
 	
 }

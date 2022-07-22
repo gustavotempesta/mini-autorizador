@@ -19,7 +19,7 @@ public class Transacao {
 	private Long id;
 	
 	@ManyToOne
-	@JoinColumn(name = "cartao_numero")
+	@JoinColumn(name = "numero_cartao")
 	private Cartao cartao;
 	private BigDecimal valor;
 	private LocalDateTime dataHora = LocalDateTime.now();
@@ -33,6 +33,14 @@ public class Transacao {
 
 	public BigDecimal getValor() {
 		return valor;
+	}
+	
+	public Cartao getCartao() {
+		return cartao;
+	}
+	
+	public LocalDateTime getDataHora() {
+		return dataHora;
 	}
 
 }

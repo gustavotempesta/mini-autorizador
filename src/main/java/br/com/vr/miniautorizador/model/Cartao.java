@@ -38,8 +38,8 @@ public class Cartao {
 		this.saldo = saldo;
 	}
 
-	public void realizaTransacao(Transacao transacao) {
-		setSaldo(saldo.subtract(transacao.getValor()));
+	public void realizaTransacao(BigDecimal valor) {
+		setSaldo(saldo.subtract(valor));
 	}
 	
 }
