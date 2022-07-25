@@ -1,9 +1,9 @@
 package br.com.vr.miniautorizador.controller;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,30 +18,32 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.vr.miniautorizador.controller.dto.CartaoDto;
 import br.com.vr.miniautorizador.controller.form.CartaoForm;
 import br.com.vr.miniautorizador.model.Cartao;
-import br.com.vr.miniautorizador.repository.CartaoRepository;
+import br.com.vr.miniautorizador.service.CartaoService;
 
 @RestController
 @RequestMapping("/cartoes")
 public class CartaoController {
 	
+	private CartaoService cartaoService;
+	
 	@Autowired
-	private CartaoRepository cartaoRepository;
+	CartaoController(CartaoService cartaoService){
+		this.cartaoService = cartaoService;
+	}
 	
 	//criar novo cartao
 	@PostMapping
 	@Transactional
-	public ResponseEntity<CartaoDto> criarCartao(@RequestBody CartaoForm form){
+	public ResponseEntity<CartaoDto> criarCartao(@RequestBody @Valid CartaoForm form){
 		Cartao cartao = form.converter();
-		Optional<Cartao> optional = cartaoRepository.findById(cartao.getNumero());
 		try {
-			optional.orElseThrow(()-> new RuntimeException());
-			return ResponseEntity
-					.status(HttpStatus.UNPROCESSABLE_ENTITY)
-					.body(new CartaoDto(cartao));
-		} catch (RuntimeException e) {
-			cartaoRepository.save(cartao);
+			cartaoService.criarCartao(cartao);
 			return ResponseEntity
 					.status(HttpStatus.CREATED)
+					.body(new CartaoDto(cartao));
+		} catch (RuntimeException e) {
+			return ResponseEntity
+					.status(HttpStatus.UNPROCESSABLE_ENTITY)
 					.body(new CartaoDto(cartao));
 		}
 	}
@@ -49,17 +51,15 @@ public class CartaoController {
 	//obter saldo do cartao
 	@GetMapping("/{id}")
 	public ResponseEntity<BigDecimal> obterSaldo(@PathVariable String id) {
-		Optional<Cartao> optional = cartaoRepository.findById(id);
 		try{
-			optional.orElseThrow(()-> new RuntimeException());
+			BigDecimal saldo = cartaoService.obterSaldo(id);
 			return ResponseEntity
 					.status(HttpStatus.OK)
-					.body(optional.get().getSaldo());
+					.body(saldo);
 		} catch (RuntimeException e) {
 			return ResponseEntity
 					.status(HttpStatus.NOT_FOUND)
 					.body(null);
 		}
 	}
-	
 }
