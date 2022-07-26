@@ -39,7 +39,7 @@ public class TransacaoController {
 		} catch (RuntimeException e) {
 			return ResponseEntity
 					.status(HttpStatus.UNPROCESSABLE_ENTITY)
-					.body(e.getMessage().toString());
+					.body(e.getMessage());
 		}
 	}
 		
